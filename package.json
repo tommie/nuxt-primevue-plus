@@ -1,6 +1,6 @@
 {
-  "name": "nuxt-primevue",
-  "version": "0.0.1",
+  "name": "nuxt-primevue-plus",
+  "version": "0.1.0",
   "license": "MIT",
   "author": "Tommie Gannert <tommie@users.noreply.github.com>",
   "type": "module",

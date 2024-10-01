@@ -13,14 +13,14 @@ It enables auto-imports of components and composables, and provides theme select
 ## Getting Started
 
 ```console
-yarn add nuxt-primevue-layer
+yarn add nuxt-primevue-plus
 ```
 
 Extend from the layer, and add your theme definitions to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
-  extends: ["nuxt-primevue-layer"],
+  extends: ["nuxt-primevue-plus"],
 
   primevueTheme: {
     themes: {
