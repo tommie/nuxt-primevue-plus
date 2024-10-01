@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   build: {
     transpile: ["primevue"],
   },
+  compatibilityDate: "2024-10-01",
   css: ["primeicons/primeicons.css", "primeflex/primeflex.css"],
   primevueTheme: {
     themes: {
