@@ -1,18 +1,3 @@
-<script lang="ts" setup>
-// Provides a button to switch between color schemes.
-
-const { themes, theme, menuItems } = usePrimeVueThemes();
-
-function iconForTheme(theme: Theme) {
-  return themes.value[theme].icon;
-}
-
-const menuEl = ref();
-function onClickButton(event: UIEvent) {
-  menuEl.value.toggle(event);
-}
-</script>
-
 <script lang="ts">
 import type { Theme } from "../composables/primevuetheme";
 
@@ -23,76 +8,58 @@ interface ThemeItem {
 
 export function usePrimeVueThemes() {
   const appConfig = useAppConfig();
-  const themes = computed(
-    () =>
-      ({
-        system: {
-          label: "System",
-          icon: "pi pi-file",
-        },
-        ...Object.fromEntries(
-          Object.entries(appConfig.primevueTheme.themes).map(([name, { label, icon }]) => [
-            name,
-            {
-              label,
-              icon,
-            },
-          ]),
-        ),
-      }) as Record<Theme, ThemeItem>,
-  );
+  const colorSchemes = appConfig.primevueTheme.colorSchemes;
   const theme = usePrimeVueTheme();
 
   return {
-    themes,
+    colorSchemes,
     theme,
     menuItems: computed(() =>
-      Object.entries(themes.value).map(([name, data]) => ({
+      Object.entries(colorSchemes).map(([name, { label, icon }]) => ({
         key: name,
-        label: data.label,
-        icon: data.icon,
+        label,
+        icon,
         command: () => {
-          theme.preferred.value = name;
+          theme.colorScheme.preferred = name;
         },
-        selected: theme.preferred.value === name,
+        selected: theme.colorScheme.preferred === name,
       })),
     ),
   };
 }
 </script>
 
+<script lang="ts" setup>
+// Provides a button to switch between color schemes.
+
+const { colorSchemes, theme, menuItems } = usePrimeVueThemes();
+
+const menuEl = ref();
+function onClickButton(event: UIEvent) {
+  menuEl.value.toggle(event);
+}
+</script>
+
 <template>
   <div>
     <PButton
-      :icon="iconForTheme(theme.resolved.value)"
+      v-bind="$attrs"
       aria-haspopup="true"
       aria-controls="theme-menu"
-      text
-      rounded
-      size="small"
-      aria-label="Open the color theme menu"
-      title="Color Theme Menu"
-      @click="onClickButton"
-    />
+      aria-label="Open the color scheme menu"
+      title="Color Scheme Menu"
+      @click="onClickButton">
+      <template #icon="props">
+        <span v-bind="props" :class="colorSchemes[theme.colorScheme.resolved].icon"></span>
+        <span v-if="theme.colorScheme.preferred === 'system'" :class="colorSchemes.system.icon" style="position: relative; font-size: xx-small; bottom: -.75ex; right: .5ex"></span>
+      </template>
+    </PButton>
     <PMenu
       id="theme-menu"
       ref="menuEl"
       :model="menuItems"
       :popup="true"
     >
-      <template #item="slotProps">
-        <div :class="['p-menuitem-link', { selected: slotProps.item.selected }]">
-          <i :class="['p-menuitem-icon', slotProps.item.icon]" />
-          <span class="p-menuitem-text">{{ slotProps.item.label }}</span>
-        </div>
-      </template>
     </PMenu>
   </div>
 </template>
-
-<style scoped>
-.selected {
-  background-color: var(--highlight-bg);
-  color: var(--highlight-text-color);
-}
-</style>

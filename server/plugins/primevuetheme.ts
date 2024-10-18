@@ -1,23 +1,16 @@
 import type { EventHandlerRequest, H3Event } from "h3";
 
 // A plugin to inject a theme style for PrimeVue, based on
-// https://primevue.org/theming/#switchthemes.
+// https://primevue.org/theming/styled/#options.
 //
 // This looks at the theme cookie to avoid flashing.
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook("render:html", (html, { event }) => {
     const appConfig = useAppConfig();
-    if (!appConfig.primevueTheme.defaultTheme) return;
-    const theme = getResolvedTheme(event, appConfig.primevueTheme.cookieName ?? "primevue-theme", appConfig.primevueTheme.defaultTheme);
+    const colorScheme = getResolvedTheme(event, appConfig.primevueTheme.cookieName, appConfig.primevueTheme.defaultColorScheme);
 
     html.htmlAttrs ||= [];
-    html.htmlAttrs.push(`data-primevue-theme="${encodeURIComponent(theme)}"`);
-    html.head ||= [];
-    html.head.push(
-      `<link id="primevue-theme-link" rel="stylesheet" href="/themes/${encodeURIComponent(
-        theme,
-      )}/theme.css">`,
-    );
+    html.htmlAttrs.push(`data-primevue-color-scheme="${encodeURIComponent(colorScheme)}"`);
   });
 });
 
@@ -26,7 +19,9 @@ function getResolvedTheme(event: H3Event<EventHandlerRequest>, cookieName: strin
   if (!cookie) return fallback;
 
   try {
-    return JSON.parse(decodeURIComponent(cookie)).resolved ?? fallback;
+    const data = JSON.parse(decodeURIComponent(cookie)) as PrimeVueThemeCookie;
+
+    return data.colorScheme.resolved ?? fallback;
   } catch {
     deleteCookie(event, cookieName);
     return fallback;

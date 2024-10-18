@@ -1,16 +1,14 @@
 import { type CookieOptions } from "#app/composables/cookie";
-import { dirname } from "pathe";
-import { defineNuxtModule, createResolver } from "@nuxt/kit";
+import { defineNuxtModule } from "@nuxt/kit";
 
-export interface PrimevueThemeConfig {
+export interface PrimevueColorSchemeConfig {
   label: string;
   icon: string;
-  path: string;
 }
 
 export interface PrimevueThemesConfig {
-  themes: Record<string, PrimevueThemeConfig>;
-  defaultTheme?: string;
+  colorSchemes: Record<string, PrimevueColorSchemeConfig>;
+  defaultColorScheme?: string;
 
   // The name of the theme cookie; defaults to "primevue-theme".
   cookieName?: string;
@@ -19,36 +17,36 @@ export interface PrimevueThemesConfig {
   cookieOptions?: CookieOptions<PrimeVueThemeCookie | null>;
 }
 
-// A module that serves the theme stylesheets as public assets.
+export type PublicPrimevueThemesConfig = PrimevueThemesConfig & Required<Pick<PrimevueThemesConfig, "defaultColorScheme" | "cookieName">>;
+
+// A module that publishes the theming configuration to the client.
 //
-// See https://primevue.org/theming/#switchthemes.
+// See https://primevue.org/theming/styled/#usepreset.
 export default defineNuxtModule<PrimevueThemesConfig>({
   meta: {
     configKey: "primevueTheme",
   },
   defaults() {
-    return { themes: {}, defaultTheme: undefined };
+    return {
+      colorSchemes: {
+        system: {
+          label: "System",
+          icon: "pi pi-file",
+        },
+        light: {
+          label: "Light",
+          icon: "pi pi-sun",
+        },
+        dark: {
+          label: "Dark",
+          icon: "pi pi-moon",
+        },
+      },
+      defaultColorScheme: "light",
+      cookieName: "primevue-theme",
+    };
   },
   setup(options, nuxt) {
-    const { resolvePath } = createResolver(import.meta.url);
-
-    nuxt.options.appConfig.primevueTheme = {
-      ...options,
-      themes: Object.fromEntries(
-        Object.entries(options.themes).map(([name, { label, icon }]) => [name, { label, icon }]),
-      ),
-    };
-
-    // Expose the provided theme files as `themes/$name`.
-    nuxt.hook("nitro:config", async (nitroConfig) => {
-      nitroConfig.publicAssets ||= [];
-      for (const [name, { path }] of Object.entries(options.themes)) {
-        nitroConfig.publicAssets.push({
-          baseURL: "themes/" + name,
-          dir: dirname(await resolvePath(path)),
-          maxAge: 7 * 24 * 3600,
-        });
-      }
-    });
+    nuxt.options.appConfig.primevueTheme = options as PublicPrimevueThemesConfig;
   },
 });

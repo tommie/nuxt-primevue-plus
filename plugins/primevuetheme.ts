@@ -3,12 +3,12 @@
 // state. It also monitors the system color scheme using listeners on
 // a media query.
 //
-// See https://primevue.org/theming/#switchthemes.
+// See https://primevue.org/theming/styled/#options.
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook("app:suspense:resolve", () => {
     nuxtApp.vueApp.runWithContext(() => {
       const theme = usePrimeVueTheme();
-      let currentTheme = theme.current;
+      let current = theme.colorScheme.current;
 
       // If this runs on app:mounted, a hydration error occurs if the
       // preferred color scheme is not the same as the server's. Not
@@ -16,15 +16,20 @@ export default defineNuxtPlugin((nuxtApp) => {
       // app:suspense:resolve.
       watchPreferredPrimeVueTheme(theme);
 
-      const primeVue = usePrimeVue();
       watch(
-        theme.resolved,
-        (theme) => {
-          if (theme === currentTheme) return;
+        () => theme.colorScheme.resolved,
+        (colorScheme) => {
+          if (colorScheme === current) return;
 
-          primeVue.changeTheme(currentTheme, theme, "primevue-theme-link");
-          document.getElementsByTagName("html")[0].dataset.primevueTheme = theme;
-          currentTheme = theme;
+          if (!document.startViewTransition) {
+            document.getElementsByTagName("html")[0].dataset.primevueColorScheme = colorScheme;
+            current = colorScheme;
+          } else {
+            document.startViewTransition(() => {
+              document.getElementsByTagName("html")[0].dataset.primevueColorScheme = colorScheme;
+              current = colorScheme;
+            });
+          }
         },
         { immediate: true },
       );

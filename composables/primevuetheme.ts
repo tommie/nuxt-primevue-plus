@@ -1,35 +1,21 @@
-export type ResolvedTheme = string;
-export type Theme = "system" | ResolvedTheme;
+export type ResolvedColorScheme = string;
+export type ColorScheme = "system" | ResolvedColorScheme;
 
 export interface PrimeVueThemeCookie {
-  preferred: Theme;
-  resolved: ResolvedTheme;
-}
-
-export interface PrimeVueThemeOptions {
+  colorScheme: {
+    preferred: ColorScheme;
+    resolved: ResolvedColorScheme;
+  };
 }
 
 export interface PrimeVueThemeState {
-  preferred: Ref<Theme>;
-  resolved: Ref<ResolvedTheme>;
-  current: ResolvedTheme;
+  colorScheme: {
+    preferred: ColorScheme;
+    resolved: ResolvedColorScheme;
+    current: ResolvedColorScheme;
+  };
 
   resolve(): void;
-}
-
-export type Themed<T> = T | Record<ResolvedTheme, T>;
-
-export function pickThemed<T extends string | number | boolean | any[]>(
-  v: Themed<T> | Ref<Themed<T> | undefined> | undefined,
-  theme: PrimeVueThemeState,
-) {
-  const vv = unref(v);
-  const tt = unref(theme.resolved);
-  if (!vv) return vv;
-  if (typeof vv === "object" && !Array.isArray(vv)) {
-    return (tt in vv ? vv[tt] : vv["default"]) as T;
-  }
-  return vv;
 }
 
 // Returns an object with reactive PrimeVue theme settings.
@@ -37,16 +23,17 @@ export function pickThemed<T extends string | number | boolean | any[]>(
 // The preferred mode is what the user sets, and is writeable.
 // The resolved mode has resolved "system" to something real.
 // The current mode is what PrimeVue is actually showing.
-export function usePrimeVueTheme(options?: PrimeVueThemeOptions): PrimeVueThemeState {
+export function usePrimeVueTheme(): PrimeVueThemeState {
   const appConfig = useAppConfig();
-  const cookie = useCookie<PrimeVueThemeCookie | null>(appConfig.primevueTheme?.cookieName ?? "primevue-theme", {
+  const cookie = useCookie<PrimeVueThemeCookie | null>(appConfig.primevueTheme.cookieName, {
     httpOnly: false,
     secure: true,
     path: "/",
-    sameSite: "none",
+    sameSite: "lax",
 
-    ...appConfig.primevueTheme?.cookieOptions,
+    ...appConfig.primevueTheme.cookieOptions,
 
+    readonly: false,
     watch: "shallow",
   });
 
@@ -55,47 +42,53 @@ export function usePrimeVueTheme(options?: PrimeVueThemeOptions): PrimeVueThemeS
   // something we can use.
   if (!cookie.value || typeof cookie.value === "string") {
     cookie.value = {
-      preferred: "system",
-      resolved: resolveTheme("system", getCurrentTheme()),
+      colorScheme: {
+        preferred: "system",
+        resolved: resolveTheme("system", getCurrentColorScheme()),
+      },
     };
   }
 
   // When there is no cookie, the server will return its default and
   // the client will initialize the cookie by resolving 'system'. This will cause a DOM mismatch. We
   // pass the resolved value to the client in a hydration state to solve that.
-  const resolved = useState("primevue-theme", () => cookie.value!.resolved);
+  const resolved = useState("primevue-theme", () => cookie.value!.colorScheme.resolved);
 
-  function updatePreferred(theme: Theme) {
-    const newRes = resolveTheme(theme, getCurrentTheme());
+  function updatePreferred(theme: ColorScheme) {
+    const newRes = resolveTheme(theme, getCurrentColorScheme());
 
-    if (theme === cookie.value!.preferred && newRes === resolved.value) return;
+    if (theme === cookie.value!.colorScheme.preferred && newRes === resolved.value) return;
 
     cookie.value = {
-      preferred: theme,
-      // If the browser doesn't support 'system', we fall back to preserving what we had.
-      resolved: newRes,
+      colorScheme: {
+        preferred: theme,
+        // If the browser doesn't support 'system', we fall back to preserving what we had.
+        resolved: newRes,
+      },
     };
-    resolved.value = cookie.value.resolved;
+    resolved.value = cookie.value.colorScheme.resolved;
   }
 
   return {
-    preferred: computed({
-      get() {
-        return cookie.value!.preferred;
-      },
-      set(theme: Theme) {
-        updatePreferred(theme);
+    colorScheme: reactive({
+      preferred: computed({
+        get() {
+          return cookie.value!.colorScheme.preferred;
+        },
+        set(theme: ColorScheme) {
+          updatePreferred(theme);
+        },
+      }),
+
+      resolved,
+
+      get current() {
+        return getCurrentColorScheme();
       },
     }),
 
-    resolved,
-
-    get current() {
-      return getCurrentTheme();
-    },
-
     resolve() {
-      updatePreferred(cookie.value!.preferred);
+      updatePreferred(cookie.value!.colorScheme.preferred);
     },
   };
 }
@@ -114,7 +107,7 @@ export function watchPreferredPrimeVueTheme(theme: PrimeVueThemeState) {
   };
 
   watch(
-    theme.preferred,
+    () => theme.colorScheme.preferred,
     (preferred) => {
       if (preferred !== "system") {
         if (query) {
@@ -124,7 +117,7 @@ export function watchPreferredPrimeVueTheme(theme: PrimeVueThemeState) {
         }
       }
 
-      const resolved = resolveTheme(preferred, getCurrentTheme());
+      const resolved = resolveTheme(preferred, getCurrentColorScheme());
       const q = globalThis.matchMedia(`(prefers-color-scheme: ${resolved})`);
       if (!q.matches) return;
 
@@ -147,7 +140,7 @@ export function watchPreferredPrimeVueTheme(theme: PrimeVueThemeState) {
 // Resolves the theme.
 //
 // See https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme.
-function resolveTheme(theme: Theme, fallback: ResolvedTheme): ResolvedTheme {
+function resolveTheme(theme: ColorScheme, fallback: ResolvedColorScheme): ResolvedColorScheme {
   if (theme !== "system") return theme;
 
   if ("matchMedia" in globalThis) {
@@ -158,34 +151,34 @@ function resolveTheme(theme: Theme, fallback: ResolvedTheme): ResolvedTheme {
   return fallback;
 }
 
-// Returns the current theme, based on the <html data-primevue-theme>
-// attribute set by the Nitro plugin.
-function getCurrentTheme(): ResolvedTheme {
+// Returns the current color scheme, based on the
+// <html data-primevue-color-scheme> attribute set by the Nitro plugin.
+function getCurrentColorScheme(): ResolvedColorScheme {
   const appConfig = useAppConfig();
 
   if (process.server) {
-    if (!appConfig.primevueTheme.defaultTheme)
+    if (!appConfig.primevueTheme.defaultColorScheme)
       throw createError({
         fatal: true,
-        statusMessage: "appConfig is missing defaultTheme",
+        statusMessage: "appConfig is missing defaultColorScheme",
       });
-    return appConfig.primevueTheme.defaultTheme;
+    return appConfig.primevueTheme.defaultColorScheme;
   }
 
-  const theme = document.getElementsByTagName("html")[0].dataset.primevueTheme;
+  const scheme = document.getElementsByTagName("html")[0].dataset.primevueColorScheme;
 
-  if (!theme)
+  if (!scheme)
     throw createError({
       fatal: true,
-      statusMessage: "Missing primevue-theme attribute",
+      statusMessage: "Missing data-primevue-color-scheme attribute",
     });
 
-  if (!(theme in appConfig.primevueTheme.themes)) {
+  if (!(scheme in appConfig.primevueTheme.colorSchemes)) {
     throw createError({
       fatal: true,
-      statusMessage: `Invalid primevue-theme attribute: ${theme}`,
+      statusMessage: `Invalid data-primevue-color-scheme attribute: ${scheme}`,
     });
   }
 
-  return theme;
+  return scheme;
 }
