@@ -1,6 +1,8 @@
 .#*
 *~
 
+/.playground/components.d.ts
+
 node_modules
 *.log
 .nuxt

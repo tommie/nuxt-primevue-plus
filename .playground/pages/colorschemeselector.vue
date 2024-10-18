@@ -1,17 +1,17 @@
 <script setup lang="ts">
 useHead({
-  title: "Theme Selector",
+  title: "Color Scheme Selector",
 });
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
-    <h2>ThemeSelector</h2>
+    <h2>ColorSchemeSelector</h2>
 
-    <PrimeVueThemeSelector />
+    <PrimeVueColorSchemeSelector />
 
     <p>It is a <code>PButton</code>, and can be styled as one:</p>
 
-    <PrimeVueThemeSelector rounded outlined severity="warn" />
+    <PrimeVueColorSchemeSelector rounded outlined severity="warn" />
   </div>
 </template>

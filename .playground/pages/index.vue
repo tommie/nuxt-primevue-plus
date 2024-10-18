@@ -10,13 +10,13 @@ useHead({
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <PCard>
-        <template #title>Theme Selector</template>
+        <template #title>Color Scheme Selector</template>
         <template #content>
-          The <code>&lt;PrimeVueThemeSelector&gt;</code> component provides a
+          The <code>&lt;PrimeVueColorSchemeSelector&gt;</code> component provides a
           button with a dropdown menu to select the theme.
 
           <p>
-            See the <NuxtLink to="themeselector">demo</NuxtLink>.
+            See the <NuxtLink to="colorschemeselector">demo</NuxtLink>.
           </p>
         </template>
       </PCard>
