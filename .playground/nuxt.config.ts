@@ -1,23 +1,13 @@
+import Lara from '@primevue/themes/lara';
+
 export default defineNuxtConfig({
-  extends: [".."],
-  primevueTheme: {
-    themes: {
-      light: {
-        label: "Light",
-        icon: "pi pi-times",
-        path: "primevue/resources/themes/md-light-indigo/theme.css",
+  extends: ['..'],
+  modules: ['@nuxtjs/tailwindcss'],
+  primevue: {
+    options: {
+      theme: {
+        preset: Lara,
       },
-      dark: {
-        label: "Dark",
-        icon: "pi pi-moon",
-        path: "primevue/resources/themes/md-dark-indigo/theme.css",
-      },
-    },
-    defaultTheme: "light",
-    cookieOptions: {
-      secure: false,
-      // sameSite=None is not allowed for secure=false.
-      sameSite: "lax",
     },
   },
 });

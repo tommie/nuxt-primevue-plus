@@ -8,7 +8,7 @@ useHead({
 </script>
 
 <template>
-  <div class="flex flex-column gap-4">
+  <div class="flex flex-col gap-4">
     <h2>Static Message</h2>
 
     <div v-html="createStaticMessage({ message: 'Hello World, severity:info!', severity: 'info' })" />

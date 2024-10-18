@@ -90,23 +90,21 @@ const VARIANTS = [
     >
       <template #title>{{ title }}</template>
       <template #content>
-        <div class="grid">
-          <div
-            v-for="(v, index) in vars"
-            :key="index"
-            class="col-6 md:col-3 flex flex-column align-items-center"
-          >
-            <ButtonLink
-              to="/"
-              v-bind="v"
-            />
-            <div class="mt-3">
-              <code>{{
-                Object.entries(v)
-                  .map(([k, v]) => `${k}="${v}"`)
-                  .join(" ")
-              }}</code>
-            </div>
+        <div
+          v-for="(v, index) in vars"
+          :key="index"
+          class="flex flex-col items-center"
+        >
+          <ButtonLink
+            to="/"
+            v-bind="v"
+          />
+          <div class="mt-3">
+            <code>{{
+                    Object.entries(v)
+                    .map(([k, v]) => `${k}="${v}"`)
+                    .join(" ")
+                  }}</code>
           </div>
         </div>
       </template>
