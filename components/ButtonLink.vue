@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // A link that is styled like PrimeVue buttons.
 import NuxtLink from "#app/components/nuxt-link";
+import PButton from "primevue/button";
 </script>
 
 <template>

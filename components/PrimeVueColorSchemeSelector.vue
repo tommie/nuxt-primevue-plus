@@ -31,6 +31,8 @@ export function usePrimeVueThemes() {
 
 <script lang="ts" setup>
 // Provides a button to switch between color schemes.
+import PButton from "primevue/button";
+import PMenu from "primevue/menu";
 
 const { colorSchemes, theme, menuItems } = usePrimeVueThemes();
 
