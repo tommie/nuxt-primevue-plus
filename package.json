@@ -12,7 +12,7 @@
     "preview": "nuxi preview .playground",
     "lint": "eslint . && nuxi typecheck",
     "format": "prettier --write .",
-    "postinstall": "nuxi prepare .playground"
+    "prepare:playground": "nuxi prepare .playground"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.1.1",
