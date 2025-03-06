@@ -29,7 +29,7 @@ defineProps<{
     background-color: rgb(0, 0, 0, var(--tw-bg-opacity)) !important;
   }
   .dark\:bg-white\/10 {
-    background-color: rgb(255, 255, 255, var(--tw-bg-opacity)) !important;
+    background-color: rgb(255, 255, 255, 0.1) !important;
   }
 }
 </style>
