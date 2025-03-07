@@ -12,17 +12,18 @@
     "preview": "nuxi preview .playground",
     "lint": "eslint . && nuxi typecheck",
     "format": "prettier --write .",
+    "prepare": "husky",
     "prepare:playground": "nuxi prepare .playground",
     "test": "nuxi typecheck"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.1.1",
+    "@nuxt/eslint-config": "^1.1.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
-    "eslint": "^8.28.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-prettier": "^5.2.3",
     "nuxt": "^3.15.4",
-    "prettier": "^3.1.0",
+    "prettier": "^3.5.3",
     "typescript": "^5.8.2",
     "vite": "^4.5.0",
     "vue-tsc": "^2.2.8"
