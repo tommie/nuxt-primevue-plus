@@ -31,8 +31,10 @@ export function usePrimeVueThemes() {
 // Provides a button to switch between color schemes.
 import PButton from "primevue/button";
 import PMenu from "primevue/menu";
+import { useId } from "vue";
 
 const { colorSchemes, theme, menuItems } = usePrimeVueThemes();
+const menuID = useId();
 
 const menuEl = ref();
 function onClickButton(event: UIEvent) {
@@ -45,17 +47,32 @@ function onClickButton(event: UIEvent) {
     <PButton
       v-bind="$attrs"
       aria-haspopup="true"
-      aria-controls="theme-menu"
+      :aria-controls="menuID"
       aria-label="Open the color scheme menu"
       title="Color Scheme Menu"
-      @click="onClickButton">
+      @click="onClickButton"
+    >
       <template #icon="props">
-        <span v-bind="props" :class="colorSchemes[theme.colorScheme.resolved].icon"></span>
-        <span v-if="theme.colorScheme.preferred === 'system'" :class="colorSchemes.system.icon" style="position: relative; font-size: xx-small; bottom: -.75ex; right: .5ex"></span>
+        <span class="inline-flex relative">
+          <span
+            v-bind="props"
+            :class="colorSchemes[theme.colorScheme.resolved].icon"
+          />
+          <span
+            v-if="theme.colorScheme.preferred === 'system'"
+            :class="colorSchemes.system.icon"
+            :style="{
+              position: 'absolute',
+              'font-size': 'xx-small',
+              bottom: '-.9ex',
+              right: '-1ex',
+            }"
+          />
+        </span>
       </template>
     </PButton>
     <PMenu
-      id="theme-menu"
+      :id="menuID"
       ref="menuEl"
       :model="menuItems"
       :popup="true"
