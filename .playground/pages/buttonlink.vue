@@ -3,7 +3,7 @@ useHead({
   title: "ButtonLink",
 });
 
-const VARIANTS = [
+const VARIANTS: [string, object[]][] = [
   [
     "Label and Icon",
     [{ label: "Label" }, { icon: "pi pi-user" }, { label: "Icon", icon: "pi pi-user" }],

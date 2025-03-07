@@ -1,6 +1,4 @@
 <script lang="ts">
-import type { Theme } from "../composables/primevuetheme";
-
 interface ThemeItem {
   label: string;
   icon: string;

@@ -1,6 +1,11 @@
-import { Theme, dt } from "@primeuix/styled";
-import { resolve } from "@primeuix/utils/object";
+import type { BaseStyle } from "@primevue/core/base/style";
 import InlineMessageStyle from "primevue/inlinemessage/style";
+
+declare module "@primevue/core/base/style" {
+  interface BaseStyle {
+    getThemeStyleSheet(params: any, props?: object): string;
+  }
+}
 
 export interface StaticMessageOptions {
   // The message HTML string.
@@ -18,8 +23,7 @@ export interface StaticMessageOptions {
 /// without escaping, so make sure they are safe.
 export function createStaticMessage(msg: StaticMessageOptions) {
   return (
-    Theme.getStyleSheet("inlinemessage") +
-    `<style>${Theme.transformCSS("inlinemessage", resolve(InlineMessageStyle.theme, { dt }))}</style>` +
+    (InlineMessageStyle as unknown as BaseStyle).getThemeStyleSheet({}) +
     `<div class="${msg.rootClass ?? "flex flex-col items-center"}">` +
     `<div role="alert" aria-live="assertive" aria-atomic="true" class="p-inlinemessage p-component${msg.severity ? " p-inlinemessage-" + msg.severity : ""}">` +
     `<div class="p-inlinemessage-text">${msg.message}</div>` +
