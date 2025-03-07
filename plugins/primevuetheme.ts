@@ -8,7 +8,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook("app:suspense:resolve", () => {
     nuxtApp.vueApp.runWithContext(() => {
       const theme = usePrimeVueTheme();
+      const canTransition = Boolean(document.startViewTransition);
+
       let current = theme.colorScheme.current;
+      let nextUseTransition = canTransition;
 
       // If this runs on app:mounted, a hydration error occurs if the
       // preferred color scheme is not the same as the server's. Not
@@ -21,13 +24,22 @@ export default defineNuxtPlugin((nuxtApp) => {
         (colorScheme) => {
           if (colorScheme === current) return;
 
-          if (!document.startViewTransition) {
+          // When starting a print, the browser may change the preferred color
+          // scheme. We don't want transitions when that happens. In fact, by
+          // disabling transitions, we can mostly avoid flickering on the page.
+          const isPrintMedia = window.matchMedia("print").matches;
+          const useTransition = canTransition && !isPrintMedia && nextUseTransition;
+          nextUseTransition = canTransition;
+
+          if (!useTransition) {
             document.getElementsByTagName("html")[0].dataset.primevueColorScheme = colorScheme;
             current = colorScheme;
+            nextUseTransition = !isPrintMedia;
           } else {
             document.startViewTransition(() => {
               document.getElementsByTagName("html")[0].dataset.primevueColorScheme = colorScheme;
               current = colorScheme;
+              nextUseTransition = canTransition;
             });
           }
         },
