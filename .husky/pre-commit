@@ -1,0 +1,11 @@
+#!/bin/sh
+
+staged_files() {
+  git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g'
+}
+
+files=$(staged_files)
+
+yarn test
+yarn eslint --no-warn-ignored $files
+yarn prettier --check --ignore-unknown $files
