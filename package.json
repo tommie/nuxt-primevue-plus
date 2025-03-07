@@ -30,6 +30,7 @@
     "vue-tsc": "^2.2.8"
   },
   "dependencies": {
+    "@nuxt/kit": "^3.15.4",
     "@primeuix/themes": "^1.0.0",
     "@primevue/nuxt-module": "^4.3.1",
     "primeicons": "^7.0.0",
