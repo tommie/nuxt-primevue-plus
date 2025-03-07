@@ -5,8 +5,8 @@ useHead({
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <h2>ColorSchemeSelector</h2>
+  <div class="flex flex-col items-center gap-4">
+    <h2 class="text-2xl mb-6">ColorSchemeSelector</h2>
 
     <PrimeVueColorSchemeSelector />
 
@@ -31,5 +31,9 @@ useHead({
       severity="warn"
       label="Colors"
     />
+
+    <PrimeVueColorSchemeToggle />
+
+    <PrimeVueColorSchemeToggle size="small" />
   </div>
 </template>

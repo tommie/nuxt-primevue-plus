@@ -16,6 +16,7 @@ export interface PrimeVueThemeState {
   };
 
   resolve(): void;
+  resolveSystem(): ResolvedColorScheme;
 }
 
 // Returns an object with reactive PrimeVue theme settings.
@@ -89,6 +90,10 @@ export function usePrimeVueTheme(): PrimeVueThemeState {
 
     resolve() {
       updatePreferred(cookie.value!.colorScheme.preferred);
+    },
+
+    resolveSystem() {
+      return resolveTheme("system", appConfig.primevueTheme.defaultColorScheme);
     },
   };
 }
